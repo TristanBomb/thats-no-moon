@@ -1,6 +1,12 @@
 require("fp")
 
-Moon = {}
+Moon = {
+    images = {
+        love.graphics.newImage("asset/image/moon/moon_1.png"),
+        love.graphics.newImage("asset/image/moon/moon_2.png"),
+        love.graphics.newImage("asset/image/moon/moon_3.png")
+    }
+}
 Moon.__index = Moon
 function Moon:new()
     local moon = {}
@@ -8,8 +14,9 @@ function Moon:new()
 
     moon.x = 0
     moon.y = 0
-    moon.dx = 0
-    moon.dy = 0
+    moon.vx = 0
+    moon.vy = 0
+    moon.defaultimage = self.images[math.random(#self.images)]
 
     return moon
 end
@@ -28,7 +35,7 @@ function Moons:new()
 end
 
 function Moons:draw()
-    foreach(function (moon) love.graphics.print("moon!", moon.x, moon.y) end, self.moonlist)
+    foreach(function (moon) love.graphics.draw(moon.defaultimage, self.x, self.y, self.theta + math.pi/2, 0.1) end, self.moonlist)
 end
 
 function Moons:fire()

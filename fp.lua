@@ -15,3 +15,18 @@ end
 function quadsum(x,y)
     return math.sqrt(math.pow(x, 2) + math.pow(y, 2))
 end
+
+function bool2num(b)
+    if b then
+        return 1
+    else
+        return 0
+    end
+end
+function num2bool(n)
+    if n == 0 then
+        return false
+    else
+        return true
+    end
+end
