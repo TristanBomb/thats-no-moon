@@ -24,7 +24,7 @@ function Ship:draw()
     love.graphics.print("ship!", self.x, self.y)
 end
 
-function Ship:tick()
+function Ship:tick(dt)
 end
 
 --all arguments are booleans

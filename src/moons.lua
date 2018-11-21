@@ -34,5 +34,5 @@ end
 function Moons:fire()
 end
 
-function Moons:tick()
+function Moons:tick(dt)
 end

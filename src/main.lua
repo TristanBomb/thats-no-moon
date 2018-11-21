@@ -5,7 +5,18 @@ function love.load()
 end
 
 function love.draw()
-    love.graphics.print("hello world!", 400, 300)
     love.graphics.clear()
     universe:draw()
+end
+
+function love.keypressed(key, scancode, isrepeat)
+    universe:keyboard_input()
+end
+
+function love.keyreleased(key, scancode, isrepeat)
+    universe:keyboard_input()
+end
+
+function love.update(dt)
+    universe:tick(dt)
 end
