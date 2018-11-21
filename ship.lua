@@ -1,6 +1,7 @@
 require("fp")
 
 Ship = {
+    -- Graphics constants
     images = {
         love.graphics.newImage("asset/image/ship/ship_azure.png"),
         love.graphics.newImage("asset/image/ship/ship_lilac.png"),
@@ -8,13 +9,21 @@ Ship = {
         love.graphics.newImage("asset/image/ship/ship_magenta.png"),
         love.graphics.newImage("asset/image/ship/ship_orange.png"),
         love.graphics.newImage("asset/image/ship/ship_turqoise.png")
-    }
+    },
+    -- Movement Constants
+    thrust = 3000,
+    drag = 0.05,
+    angvel = 0.75*2*math.pi,
+    wrapmargin = 64,
+    -- Combat Constants
+    cooldown = 0.3 -- seconds
 }
 Ship.__index = Ship
-function Ship:new()
+function Ship:new(universe)
     local ship = {}
     setmetatable(ship, self)
 
+    -- Movement and control
     ship.x = 100
     ship.y = 100
     ship.vx = 0
@@ -25,15 +34,14 @@ function Ship:new()
         down = 0,
         left = 0,
         right = 0,
-        fire = 0
+        fire = false
     }
-
-    ship.thrust = 3000
-    ship.drag = 0.05
-    ship.angvel = 0.75*2*math.pi
-    ship.wrapmargin = 64
-
+    -- Rendering
     ship.defaultimage = self.images[math.random(#self.images)]
+    -- Firing moons
+    ship.timesincefire = 0
+    ship.universe = universe
+
     return ship
 end
 
@@ -64,6 +72,12 @@ function Ship:tick(dt)
     -- Wrap position
     self.x = ((self.x + self.wrapmargin) % (love.graphics.getWidth() + 2*self.wrapmargin)) - self.wrapmargin
     self.y = ((self.y + self.wrapmargin) % (love.graphics.getHeight() + 2*self.wrapmargin)) - self.wrapmargin
+    -- Fire moons if the moon button is down
+    self.timesincefire = self.timesincefire + dt
+    if (self.timesincefire > self.cooldown and self.inputs.fire) then
+        self.universe.moons:fire(self.x, self.y, self.theta, 7.5)
+        self.timesincefire = 0
+    end
 end
 
 -- this function converts its boolean arguments to
@@ -73,5 +87,5 @@ function Ship:input(up, down, left, right, fire)
     self.inputs.down = bool2num(down)
     self.inputs.left = bool2num(left)
     self.inputs.right = bool2num(right)
-    self.inputs.fire = bool2num(fire)
+    self.inputs.fire = fire
 end

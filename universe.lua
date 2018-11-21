@@ -8,16 +8,9 @@ function Universe:new()
     local universe = {}
     setmetatable(universe, self)
 
-    universe.moons = Moons.new()
-    universe.ships = {Ship:new(), Ship:new()}
-
-    moon1 = Moon:new()
-    moon1.x = 100
-    moon1.y = 100
-    moon2 = Moon:new()
-    moon2.x = 300
-    moon2.y = 300
-    universe.moons.moonlist = {moon1, moon2}
+    universe.moons = Moons:new()
+    universe.ships = {Ship:new(universe), Ship:new(universe)}
+    
     return universe
 end
 
@@ -40,10 +33,10 @@ end
 
 function Universe:draw()
     foreach(function(ship) ship:draw() end, self.ships)
-    foreach(function(moons) moons:draw() end, self.moons)
+    self.moons:draw()
 end
 
 function Universe:tick(dt)
     foreach(function(ship) ship:tick(dt) end, self.ships)
-    foreach(function(moons) moons:tick(dt) end, self.moons)
+    self.moons:tick(dt)
 end
