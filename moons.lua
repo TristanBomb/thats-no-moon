@@ -13,19 +13,11 @@ Moon = {
 Moon.__index = Moon
 function Moon:new(copy)
     local moon = {}
-    if copy then
-        moon.x = copy.x
-        moon.y = copy.y
-        moon.vx = copy.vx
-        moon.vy = copy.vy
-        moon.defaultimage = copy.defaultimage
-    else
-        moon.x = 0
-        moon.y = 0
-        moon.vx = 0
-        moon.vy = 0
-        moon.defaultimage = self.images[math.random(#self.images)]
-    end
+    moon.x = 0
+    moon.y = 0
+    moon.vx = 0
+    moon.vy = 0
+    moon.defaultimage = self.images[math.random(#self.images)]
 
     setmetatable(moon, self)
 
