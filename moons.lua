@@ -7,8 +7,9 @@ Moon = {
         love.graphics.newImage("asset/image/moon/moon_3.png")
     },
     mass = 1,
-    G = 10000,
-    maxgravityforce = 0.1
+    G = 1000000,
+    maxgravityforce = 50,
+    killradius = 25
 }
 Moon.__index = Moon
 function Moon:new(copy)
@@ -17,12 +18,19 @@ function Moon:new(copy)
     moon.y = 0
     moon.vx = 0
     moon.vy = 0
+    moon.theta = 2 * math.pi * math.random()
+    moon.vtheta = 0
     moon.defaultimage = self.images[math.random(#self.images)]
 
     setmetatable(moon, self)
 
     return moon
 end
+
+function Moon:draw()
+    love.graphics.draw(self.defaultimage, self.x, self.y, self.theta, 0.07, 0.07, self.defaultimage:getWidth()/2, self.defaultimage:getHeight()/2)
+end
+
 function Moon:projected_field(x, y)
     local dx = x - self.x
     local dy = y - self.y
@@ -50,15 +58,16 @@ function Moons:new()
 end
 
 function Moons:draw()
-    foreach(function (moon) love.graphics.draw(moon.defaultimage, moon.x, moon.y, 0, 0.1) end, self.moonlist)
+    foreach(Moon.draw, self.moonlist)
 end
 
-function Moons:fire(x, y, theta, velocity)
+function Moons:fire(x, y, vx, vy, vtheta)
     local newmoon = Moon:new()
     newmoon.x = x
     newmoon.y = y
-    newmoon.vx = math.cos(theta) * velocity
-    newmoon.vy = math.sin(theta) * velocity
+    newmoon.vx = vx
+    newmoon.vy = vy
+    newmoon.vtheta = vtheta + love.math.randomNormal(3, 0)
     table.insert(self.moonlist, newmoon)
 end
 
@@ -66,20 +75,37 @@ function Moons:tick(dt)
     -- this works because tables are stored as pointers
     -- simple, easy hack to mutate the moon tables
     foreach(function (moon)
-        Gfx, Gfy = self:get_field(moon.x, moon.y)
-        -- this calculation is VERY BROKEN
-        -- it continually just sends moons to the top left corner
-        -- TODO: please fix this tristan :^)
-        moon.vx = moon.vx - math.min(math.abs(Gfx) / moon.mass, moon.maxgravityforce)
-        moon.vy = moon.vy - math.min(math.abs(Gfy) / moon.mass, moon.maxgravityforce)
-        moon.x = moon.x + moon.vx
-        moon.y = moon.y + moon.vy
+        local Gfx, Gfy = self:get_field(moon.x, moon.y)
+        Gfx = clamp(Gfx,moon.maxgravityforce)
+        Gfy = clamp(Gfy,moon.maxgravityforce)
+        moon.vx = moon.vx - Gfx / moon.mass
+        moon.vy = moon.vy - Gfy / moon.mass
+        moon.x = moon.x + moon.vx * dt
+        moon.y = moon.y + moon.vy * dt
+        moon.theta = moon.theta + moon.vtheta * dt
         return moon
     end, self.moonlist)
     -- remove moons that are off the edge
     for i,v in ipairs(self.moonlist)  do
         if v.x < 0 or v.x > love.graphics.getWidth() or v.y < 0 or v.y > love.graphics.getHeight() then
             table.remove(self.moonlist, i)
+        end
+    end
+    -- remove moons that bop each other
+    for i,v in ipairs(self.moonlist) do
+        for j = 1, (i - 1) do
+            local u = self.moonlist[j]
+            if v == nil or u == nil then
+                -- If either of the moons have been removed since the loop started, just break
+                break
+            end
+            local dist = quadsum(u.x - v.x, u.y - v.y)
+            print(dist)
+            print(Moon.killradius)
+            if dist < Moon.killradius then
+                table.remove(self.moonlist, i)
+                table.remove(self.moonlist, j)
+            end
         end
     end
 end

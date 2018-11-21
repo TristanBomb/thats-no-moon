@@ -112,9 +112,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.1767767"
-     inkscape:cx="1712.6645"
-     inkscape:cy="-1073.4491"
+     inkscape:zoom="1"
+     inkscape:cx="870.31776"
+     inkscape:cy="452.16748"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -632,16 +632,6 @@
            r="10.18566" />
       </g>
     </g>
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:64px;line-height:80.00000119%;font-family:'Lemon/Milk';-inkscape-font-specification:'Lemon/Milk';font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-feature-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000000;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;opacity:1;vector-effect:none;fill:#800080;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:5;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:normal"
-       x="323"
-       y="702.51965"
-       id="text44256"><tspan
-         sodipodi:role="line"
-         id="tspan44254"
-         x="323"
-         y="702.51965">START</tspan></text>
     <rect
        style="opacity:1;vector-effect:none;fill:#15154c;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1.06692696;stroke-linecap:square;stroke-opacity:1;paint-order:normal"
        id="rect44258"

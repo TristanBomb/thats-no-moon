@@ -23,10 +23,19 @@ function bool2num(b)
         return 0
     end
 end
+
 function num2bool(n)
     if n == 0 then
         return false
     else
         return true
     end
+end
+
+function clamp(x,lim)
+    return math.min(math.max(x, -lim), lim)
+end
+
+function clamp2(x,llim,ulim)
+    return math.min(math.max(x, llim), ulim)
 end

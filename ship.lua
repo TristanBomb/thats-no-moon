@@ -13,7 +13,7 @@ Ship = {
     -- Movement Constants
     thrust = 3000,
     drag = 0.05,
-    angvel = 0.75*2*math.pi,
+    vtheta = 0.75*2*math.pi,
     wrapmargin = 64,
     -- Combat Constants
     cooldown = 0.3 -- seconds
@@ -68,14 +68,16 @@ function Ship:tick(dt)
     self.y = self.y + dt * self.vy
     -- Update rotation
     local rotation_mod = self.inputs.right - self.inputs.left
-    self.theta = self.theta + self.angvel * rotation_mod * dt
+    self.theta = self.theta + self.vtheta * rotation_mod * dt
     -- Wrap position
     self.x = ((self.x + self.wrapmargin) % (love.graphics.getWidth() + 2*self.wrapmargin)) - self.wrapmargin
     self.y = ((self.y + self.wrapmargin) % (love.graphics.getHeight() + 2*self.wrapmargin)) - self.wrapmargin
     -- Fire moons if the moon button is down
     self.timesincefire = self.timesincefire + dt
     if (self.timesincefire > self.cooldown and self.inputs.fire) then
-        self.universe.moons:fire(self.x, self.y, self.theta, 7.5)
+        local fire_x = math.cos(self.theta) * 500 + self.vx
+        local fire_y = math.sin(self.theta) * 500 + self.vy
+        self.universe.moons:fire(self.x, self.y, fire_x, fire_y, self.vtheta * rotation_mod)
         self.timesincefire = 0
     end
 end
