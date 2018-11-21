@@ -12,6 +12,8 @@ function Moon:new()
     local moon = {}
     setmetatable(moon, self)
 
+    moon.mass = 1
+    moon.G = 1
     moon.x = 0
     moon.y = 0
     moon.vx = 0
@@ -21,6 +23,19 @@ function Moon:new()
     return moon
 end
 
+function Moon:projected_field(x, y)
+    dx = x - self.x
+    dy = y - self.y
+    r = quadsum(dx,dy)
+    if r == 0 then
+        return {0, 0}
+    else
+        g = G*self.mass/math.pow(r, 2)
+        gx = F * dx / r
+        gy = F * dy / r
+        return {gx, gy}
+    end
+end
 
 
 Moons = {}
@@ -42,4 +57,13 @@ function Moons:fire()
 end
 
 function Moons:tick(dt)
+end
+
+function Moons:get_field(x,y)
+    total_field = {0, 0}
+    for i, v in ipairs(self.moonlist) do
+        this_field = v.projected_field(x, y)
+        total_field[1] = total_field[1] + this_field[1]
+        total_field[2] = total_field[2] + this_field[2]
+    end
 end

@@ -28,10 +28,10 @@ function Ship:new()
         fire = 0
     }
 
-    ship.thrust = 10000
-    ship.drag = 0.0002
-    ship.mass = 1
-    ship.angvel = 2*math.pi
+    ship.thrust = 3000
+    ship.drag = 0.05
+    ship.angvel = 0.75*2*math.pi
+    ship.wrapmargin = 64
 
     ship.defaultimage = self.images[math.random(#self.images)]
     return ship
@@ -53,15 +53,17 @@ function Ship:tick(dt)
     self.vx = self.vx * math.pow(self.drag, dt)
     self.vy = self.vy * math.pow(self.drag, dt)
     -- Update velocity
-    self.vx = self.vx + dt * Fx / self.mass
-    self.vy = self.vy + dt * Fy / self.mass
+    self.vx = self.vx + dt * Fx
+    self.vy = self.vy + dt * Fy
     -- Update position
     self.x = self.x + dt * self.vx
     self.y = self.y + dt * self.vy
     -- Update rotation
     local rotation_mod = self.inputs.right - self.inputs.left
     self.theta = self.theta + self.angvel * rotation_mod * dt
-
+    -- Wrap position
+    self.x = ((self.x + self.wrapmargin) % (love.graphics.getWidth() + 2*self.wrapmargin)) - self.wrapmargin
+    self.y = ((self.y + self.wrapmargin) % (love.graphics.getHeight() + 2*self.wrapmargin)) - self.wrapmargin
 end
 
 -- this function converts its boolean arguments to

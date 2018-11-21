@@ -11,6 +11,13 @@ function Universe:new()
     universe.moons = Moons.new()
     universe.ships = {Ship:new(), Ship:new()}
 
+    moon1 = Moon:new()
+    moon1.x = 100
+    moon1.y = 100
+    moon2 = Moon:new()
+    moon2.x = 300
+    moon2.y = 300
+    universe.moons.moonlist = {moon1, moon2}
     return universe
 end
 
