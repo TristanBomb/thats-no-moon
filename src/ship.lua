@@ -16,12 +16,12 @@ function Ship:new()
         right = false,
         fire = false
     }
-
+    ship.defaultimage = love.graphics.newImage("asset/image/ship/ship_azure.png")
     return ship
 end
 
 function Ship:draw()
-    love.graphics.print("ship!", self.x, self.y)
+    love.graphics.draw(self.defaultimage, self.x, self.y, self.theta)
 end
 
 function Ship:tick(dt)
