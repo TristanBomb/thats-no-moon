@@ -11,4 +11,5 @@ function love.conf(t)
     t.window.height = 768
     t.window.icon = "asset/image/icon/icon.png"
     t.window.title = string.format("That's No Moon: %s", subtitles[math.random(#subtitles)])
+    t.window.msaa = 16
 end
