@@ -6,6 +6,6 @@ end
 
 function love.draw()
     love.graphics.print("hello world!", 400, 300)
-    universe:draw()
     love.graphics.clear()
+    universe:draw()
 end
