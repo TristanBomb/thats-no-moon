@@ -11,3 +11,7 @@ function foreach(f,a)
         f(v)
     end
 end
+
+function quadsum(x,y)
+    return math.sqrt(math.pow(x, 2) + math.pow(y, 2))
+end
