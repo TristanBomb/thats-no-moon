@@ -2,9 +2,16 @@ require("fp")
 
 Moon = {
     images = {
-        love.graphics.newImage("asset/image/moon/moon_1.png"),
-        love.graphics.newImage("asset/image/moon/moon_2.png"),
-        love.graphics.newImage("asset/image/moon/moon_3.png")
+        nodamage = {
+            love.graphics.newImage("asset/image/moon/moon_1.png"),
+            love.graphics.newImage("asset/image/moon/moon_2.png"),
+            love.graphics.newImage("asset/image/moon/moon_3.png")
+        },
+        damage = {
+            love.graphics.newImage("asset/image/moon/moon_1_dmg.png"),
+            love.graphics.newImage("asset/image/moon/moon_2_dmg.png"),
+            love.graphics.newImage("asset/image/moon/moon_3_dmg.png")
+        }
     },
     mass = 1,
     G = 1000000,
@@ -14,21 +21,25 @@ Moon = {
 Moon.__index = Moon
 function Moon:new(copy)
     local moon = {}
+    setmetatable(moon, self)
+
     moon.x = 0
     moon.y = 0
     moon.vx = 0
     moon.vy = 0
     moon.theta = 2 * math.pi * math.random()
     moon.vtheta = 0
-    moon.defaultimage = self.images[math.random(#self.images)]
 
-    setmetatable(moon, self)
+    moon.damage = 0
+
+    moon.imageindex = math.random(#self.images)
+    moon.image = self.images.nodamage[moon.imageindex]
 
     return moon
 end
 
 function Moon:draw()
-    love.graphics.draw(self.defaultimage, self.x, self.y, self.theta, 0.07, 0.07, self.defaultimage:getWidth()/2, self.defaultimage:getHeight()/2)
+    love.graphics.draw(self.image, self.x, self.y, self.theta, 0.07, 0.07, self.image:getWidth()/2, self.image:getHeight()/2)
 end
 
 function Moon:projected_field(x, y)
@@ -58,7 +69,7 @@ function Moons:new()
 end
 
 function Moons:draw()
-    foreach(Moon.draw, self.moonlist)
+    foreach(function (moon) moon:draw() end, self.moonlist)
 end
 
 function Moons:fire(x, y, vx, vy, vtheta)
@@ -91,19 +102,32 @@ function Moons:tick(dt)
             table.remove(self.moonlist, i)
         end
     end
-    -- remove moons that bop each other
+    -- damage and remove moons that bop each other
     for i,v in ipairs(self.moonlist) do
         for j = 1, (i - 1) do
             local u = self.moonlist[j]
             if v == nil or u == nil then
                 -- If either of the moons have been removed since the loop started, just break
-                break
+                goto continue
             end
             local dist = quadsum(u.x - v.x, u.y - v.y)
             if dist < Moon.radius then
-                table.remove(self.moonlist, i)
-                table.remove(self.moonlist, j)
+                for _, currmoon in ipairs({i, j}) do
+                    if self.moonlist[currmoon].damage > 1 then
+                        self.moonlist[currmoon] = nil
+                    else
+                        self.moonlist[currmoon].damage = self.moonlist[currmoon].damage + 1
+                        self.moonlist[currmoon].image = self.moonlist[currmoon].images.damage[self.moonlist[currmoon].imageindex]
+                    end
+                end
             end
+            ::continue::
+        end
+    end
+    -- finish the removal process by pruning the list of nils
+    for i = 1, #self.moonlist do
+        if self.moonlist[i] == nil then
+            table.remove(self.moonlist, i)
         end
     end
 end

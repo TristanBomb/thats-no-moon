@@ -5,13 +5,13 @@ require("mainmenu")
 function love.load()
     universe = Universe:new()
     mainmenu = MainMenu:new()
-    stateenum = GameState.MainMenu
+    stateenum = GameState.Universe
     fpsinv = 1
 end
 
 function love.draw()
     love.graphics.clear()
-    love.graphics.print("FPS: " .. tostring(1/fpsinv), 10, 10)
+    love.graphics.print("FPS: " .. tostring(math.floor(1/fpsinv), 10, 10))
     if stateenum == GameState.MainMenu then
         mainmenu:draw()
     elseif stateenum == GameState.Universe then
