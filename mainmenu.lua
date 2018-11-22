@@ -29,6 +29,13 @@ function MainMenu:draw()
         end
     end
 
+    -- draw background
+    --love.graphics.setBackgroundColor(22/256, 22/256, 80/256)
+    love.graphics.push("all")
+    love.graphics.setColor(22/256, 22/256, 80/256)
+    love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
+    love.graphics.pop()
+
     -- draw cool title effect
     love.graphics.push()
     local cooltitletrans = love.math.newTransform()
@@ -42,8 +49,8 @@ function MainMenu:draw()
     -- draw particles
     foreach(function (particle)
         love.graphics.push("all")
-        love.graphics.setColor(255, 255, 255, 0.3)
-        love.graphics.draw(particle.image, particle.x, particle.y, particle.theta, 0.2)
+        love.graphics.setColor(255, 255, 255, particle.opacity)
+        love.graphics.draw(particle.image, particle.x, particle.y, particle.theta, particle.size)
         love.graphics.pop()
     end, self.particles)
 end
@@ -52,13 +59,18 @@ function MainMenu:keyboard_input()
 end
 
 function MainMenu:new_particle()
+    size = math.random() / 3 + 0.3
+    image = self.images.moons[math.random(#self.images.moons)]
     table.insert(self.particles, {
-        x = love.graphics.getWidth() + 150,
+        size = size,
+        image = image,
+        x = love.graphics.getWidth() + image:getWidth() * size + 50,
+        -- don't spawn at the _very_ top
         y = math.random(love.graphics.getHeight() - 200) + 200,
         vx = -math.random(5),
         vy = 0,
         theta = math.random() * 6.28,
-        image = self.images.moons[math.random(#self.images.moons)]
+        opacity = 0.5
     })
 end
 
@@ -66,16 +78,19 @@ function MainMenu:tick(dt)
     -- increase time variable for animations
     self.t = self.t + dt
 
-    -- simulate particles
+    -- simulate particle physics
     for i, v in ipairs(self.particles) do
         v.x = v.x + v.vx
         v.y = v.y + v.vy
         v.vy = v.vy + 0.01
-        if v.y > love.graphics.getHeight() + 150 then
+        if v.y > love.graphics.getHeight() + (v.image:getWidth() * v.size) + 50 then
             table.remove(self.particles, i)
         end
+        -- make particles fade out
+        v.opacity = v.opacity * math.pow(0.8, dt)
     end
-    if math.random() > 0.93 then
+    -- spawn new particles
+    if math.random() > 0.95 then
         self:new_particle()
     end
 end
