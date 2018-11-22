@@ -9,7 +9,7 @@ Moon = {
     mass = 1,
     G = 1000000,
     maxgravityforce = 50,
-    killradius = 25
+    radius = 25
 }
 Moon.__index = Moon
 function Moon:new(copy)
@@ -100,9 +100,7 @@ function Moons:tick(dt)
                 break
             end
             local dist = quadsum(u.x - v.x, u.y - v.y)
-            print(dist)
-            print(Moon.killradius)
-            if dist < Moon.killradius then
+            if dist < Moon.radius then
                 table.remove(self.moonlist, i)
                 table.remove(self.moonlist, j)
             end
