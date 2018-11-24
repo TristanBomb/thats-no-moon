@@ -16,6 +16,33 @@ function quadsum(x,y)
     return math.sqrt(math.pow(x, 2) + math.pow(y, 2))
 end
 
+
+function unitvector(a1, a2)
+    local norm = quadsum(a1, a2)
+    return a1 / norm, a2 / norm
+end
+
+function dot(a1, a2, b1, b2)
+    return a1 * b1 + a2 * b2
+end
+
+function addvector(a1, a2, b1, b2)
+    return a1 + b1, a2 + b2
+end
+
+function subvector(a1, a2, b1, b2)
+    return a1 - b1, a2 - b2
+end
+
+-- {a1,a2} is the vector getting projected
+-- {b1,b2} is the vector being projected onto
+-- proj_b(a)
+function vectorproj(a1, a2, b1, b2)
+    local unit1, unit2 = unitvector(b1, b2)
+    local scalarproj = dot(a1, a2, unit1, unit2)
+    return unit1 * scalarproj, unit2 * scalarproj
+end
+
 function bool2num(b)
     if b then
         return 1

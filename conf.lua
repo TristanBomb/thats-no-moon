@@ -2,8 +2,10 @@ math.randomseed(os.time())
 local subtitles = {
     "That's No Sun, Either",
     "Gravity Extravaganza",
+    "Shoot Your Friends",
     "Punch Your Friends",
-    "Send Help"
+    "Send Help",
+    "Don't Get Bopped"
 }
 
 function love.conf(t)

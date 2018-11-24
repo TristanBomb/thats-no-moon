@@ -10,7 +10,7 @@ function Universe:new()
     local universe = {}
     setmetatable(universe, self)
 
-    universe.moons = Moons:new()
+    universe.moons = Moons:new(universe)
     universe.ships = {Ship:new(universe), Ship:new(universe)}
 
     return universe
