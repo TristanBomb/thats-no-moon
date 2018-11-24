@@ -16,7 +16,8 @@ Moon = {
     mass = 1,
     G = 1000000,
     maxgravityforce = 50,
-    radius = 35
+    radius = 35,
+    invulntime = 0.5
 }
 Moon.__index = Moon
 function Moon:new(copy)
@@ -31,6 +32,7 @@ function Moon:new(copy)
     moon.vtheta = 0
 
     moon.damage = 0
+    moon.invulntimeleft = 0
 
     moon.imageindex = math.random(#self.images)
     moon.image = self.images.nodamage[moon.imageindex]
@@ -43,10 +45,13 @@ function Moon:draw()
 end
 
 function Moon:do_damage()
-    self.damage = self.damage + 1
-    if self.damage > 0 then
-        self.image = self.images.damage[self.imageindex]
+    if self.invulntimeleft <= 0 then
+        self.damage = self.damage + 1
+        if self.damage > 0 then
+            self.image = self.images.damage[self.imageindex]
+        end
     end
+    self.invulntimeleft = self.invulntime
 end
 
 function Moon:projected_field(x, y)
@@ -109,12 +114,16 @@ function Moons:tick(dt)
     -- this works because tables are stored as pointers
     -- simple, easy hack to mutate the moon tables
     foreach(function (moon)
+        -- update the invuln timer
+        if moon.invulntimeleft > 0 then
+            moon.invulntimeleft = moon.invulntimeleft - dt
+        end
         local Gfx, Gfy = self:get_field(moon.x, moon.y)
         Gfx = clamp(Gfx,moon.maxgravityforce)
         Gfy = clamp(Gfy,moon.maxgravityforce)
         -- euler integration
-        moon.vx = moon.vx - Gfx / moon.mass
-        moon.vy = moon.vy - Gfy / moon.mass
+        -- moon.vx = moon.vx - Gfx / moon.mass
+        -- moon.vy = moon.vy - Gfy / moon.mass
         moon.x = moon.x + moon.vx * dt
         moon.y = moon.y + moon.vy * dt
         moon.theta = moon.theta + moon.vtheta * dt
@@ -156,8 +165,9 @@ function Moons:tick(dt)
                 -- bounce moon1
                 local norm1, norm2 = subvector(moon2.x, moon2.y, -moon1.x, -moon1.y)
                 local velovernorm1, velovernorm2 = vectorproj(moon1.vx, moon1.vy, norm1, norm2)
-                local velovernorm1T, velovernorm2T = subvector(moon1.vx, moon1.vy, velovernorm1, velovernorm2)
-                moon1.vx, moon1.vy = addvector(-velovernorm1, -velovernorm2, velovernorm1T, velovernorm2T)
+                -- local velovernorm1T, velovernorm2T = subvector(moon1.vx, moon1.vy, velovernorm1, velovernorm2)
+                -- moon1.vx, moon1.vy = addvector(-velovernorm1, -velovernorm2, velovernorm1T, velovernorm2T)
+                moon1.vx, moon1.vy = addvector(moon1.vx, moon1.vy, -2 * velovernorm1, -2 * velovernorm2)
                 -- conservation of momentum
                 local moonunit1, moonunit2 = unitvector(moon1.vx, moon1.vy)
                 local othermag = quadsum(moon2.vx, moon2.vy)
@@ -165,9 +175,9 @@ function Moons:tick(dt)
                 -- bounce moon2
                 local norm1, norm2 = addvector(moon1.x, moon1.y, -moon2.x, -moon2.y)
                 local velovernorm1, velovernorm2 = vectorproj(moon2.vx, moon2.vy, norm1, norm2)
-                local velovernorm1T, velovernorm2T = subvector(moon2.vx, moon2.vy, velovernorm1, velovernorm2)
-                moon2.vx, moon2.vy = addvector(-velovernorm1, -velovernorm2, velovernorm1T, velovernorm2T)
-                -- moon2.vx, moon2.vy = addvector(moon2.vx, moon2.vy, -2 * velovernorm1, -2 * velovernorm2)
+                -- local velovernorm1T, velovernorm2T = subvector(moon2.vx, moon2.vy, velovernorm1, velovernorm2)
+                -- moon2.vx, moon2.vy = addvector(-velovernorm1, -velovernorm2, velovernorm1T, velovernorm2T)
+                moon2.vx, moon2.vy = addvector(moon2.vx, moon2.vy, -2 * velovernorm1, -2 * velovernorm2)
                 -- conservation of momentum
                 local moonunit1, moonunit2 = unitvector(moon2.vx, moon2.vy)
                 local othermag = quadsum(old1vx, old1vy)

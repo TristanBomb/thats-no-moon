@@ -16,7 +16,6 @@ function quadsum(x,y)
     return math.sqrt(math.pow(x, 2) + math.pow(y, 2))
 end
 
-
 function unitvector(a1, a2)
     local norm = quadsum(a1, a2)
     return a1 / norm, a2 / norm
