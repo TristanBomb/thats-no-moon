@@ -15,3 +15,5 @@ function love.conf(t)
     t.window.title = string.format("That's No Moon: %s", subtitles[math.random(#subtitles)])
     t.window.msaa = 16
 end
+
+love.ticks_per_frame = 5

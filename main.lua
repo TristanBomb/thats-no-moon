@@ -35,10 +35,14 @@ function love.keyreleased(key, scancode, isrepeat)
 end
 
 function love.update(dt)
-    fpsinv = dt
+    local tick_len = dt / love.ticks_per_frame
     if stateenum == GameState.MainMenu then
-        mainmenu:tick(dt)
+        for _ = 1, love.ticks_per_frame do
+            mainmenu:tick(tick_len)
+        end
     elseif stateenum == GameState.Universe then
-        universe:tick(dt)
+        for _ = 1, love.ticks_per_frame do
+            universe:tick(tick_len)
+        end
     end
 end

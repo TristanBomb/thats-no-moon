@@ -14,10 +14,10 @@ Moon = {
         }
     },
     mass = 1,
-    G = 1000000,
-    maxgravityforce = 50,
+    G = 100000000,
+    maxgravityforce = 2500, -- this is PER TICK!
     radius = 35,
-    invulntime = 0.5
+    invulntime = 0.15
 }
 Moon.__index = Moon
 function Moon:new(copy)
@@ -122,8 +122,8 @@ function Moons:tick(dt)
         Gfx = clamp(Gfx,moon.maxgravityforce)
         Gfy = clamp(Gfy,moon.maxgravityforce)
         -- euler integration
-        -- moon.vx = moon.vx - Gfx / moon.mass
-        -- moon.vy = moon.vy - Gfy / moon.mass
+        moon.vx = moon.vx - (Gfx / moon.mass) * dt
+        moon.vy = moon.vy - (Gfy / moon.mass) * dt
         moon.x = moon.x + moon.vx * dt
         moon.y = moon.y + moon.vy * dt
         moon.theta = moon.theta + moon.vtheta * dt
@@ -154,7 +154,9 @@ function Moons:tick(dt)
                 goto continue
             end
             local dist = quadsum(moon2.x - moon1.x, moon2.y - moon1.y)
-            if dist < Moon.radius then
+            -- if they're colliding and heading towards each other and not on invuln
+            --if dist < Moon.radius and dot(moon1.vx, moon1.vy, moon2.vx, moon2.vy) <= 0 then
+            if dist < Moon.radius and not (moon1.invulntimeleft ~= 0 and moon2.invulntimeleft ~= 0)  then
                 for _, currindex in ipairs({i, j}) do
                     -- deal the damage to the moons
                     self:do_damage(currindex)
@@ -165,8 +167,6 @@ function Moons:tick(dt)
                 -- bounce moon1
                 local norm1, norm2 = subvector(moon2.x, moon2.y, -moon1.x, -moon1.y)
                 local velovernorm1, velovernorm2 = vectorproj(moon1.vx, moon1.vy, norm1, norm2)
-                -- local velovernorm1T, velovernorm2T = subvector(moon1.vx, moon1.vy, velovernorm1, velovernorm2)
-                -- moon1.vx, moon1.vy = addvector(-velovernorm1, -velovernorm2, velovernorm1T, velovernorm2T)
                 moon1.vx, moon1.vy = addvector(moon1.vx, moon1.vy, -2 * velovernorm1, -2 * velovernorm2)
                 -- conservation of momentum
                 local moonunit1, moonunit2 = unitvector(moon1.vx, moon1.vy)
@@ -175,8 +175,6 @@ function Moons:tick(dt)
                 -- bounce moon2
                 local norm1, norm2 = addvector(moon1.x, moon1.y, -moon2.x, -moon2.y)
                 local velovernorm1, velovernorm2 = vectorproj(moon2.vx, moon2.vy, norm1, norm2)
-                -- local velovernorm1T, velovernorm2T = subvector(moon2.vx, moon2.vy, velovernorm1, velovernorm2)
-                -- moon2.vx, moon2.vy = addvector(-velovernorm1, -velovernorm2, velovernorm1T, velovernorm2T)
                 moon2.vx, moon2.vy = addvector(moon2.vx, moon2.vy, -2 * velovernorm1, -2 * velovernorm2)
                 -- conservation of momentum
                 local moonunit1, moonunit2 = unitvector(moon2.vx, moon2.vy)
@@ -190,6 +188,7 @@ function Moons:tick(dt)
 end
 
 function Moons:get_field(x,y)
+    -- TODO: MEMOIZE THIS FUNCTION
     local total_field = {0, 0}
     for i, v in ipairs(self.moonlist) do
         field_x, field_y = v:projected_field(x, y)
