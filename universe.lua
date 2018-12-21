@@ -1,5 +1,6 @@
 require("ship")
 require("moons")
+require("particles")
 require("fp")
 
 Universe = {
@@ -12,6 +13,7 @@ function Universe:new()
 
     universe.moons = Moons:new(universe)
     universe.ships = {Ship:new(universe), Ship:new(universe)}
+    universe.particle_system = ParticleSystem:new(universe)
 
     return universe
 end
@@ -49,9 +51,12 @@ function Universe:draw()
     foreach(function(ship) ship:draw() end, self.ships)
     -- draw moons
     self.moons:draw()
+    -- draw particles
+    self.particle_system:draw()
 end
 
 function Universe:tick(dt)
     foreach(function(ship) ship:tick(dt) end, self.ships)
     self.moons:tick(dt)
+    self.particle_system:tick(dt)
 end
