@@ -44,7 +44,10 @@ function Moon:draw()
     love.graphics.draw(self.image, self.x, self.y, self.theta, 0.07, 0.07, self.image:getWidth()/2, self.image:getHeight()/2)
 end
 
-function Moon:do_damage()
+function Moon:do_damage(universe)
+    -- draw the cool particles
+    universe.particle_system:create_emitter(self.x, self.y, 100, 50, 15)
+    -- damage the moon
     if self.invulntimeleft <= 0 then
         self.damage = self.damage + 1
         if self.damage > 0 then
@@ -97,7 +100,8 @@ end
 
 function Moons:do_damage(moonindex)
     -- do the damage itself by calling Moon:do_damage
-    self.moonlist[moonindex]:do_damage()
+    -- we pass in the universe because the moon uses it to draw the particles
+    self.moonlist[moonindex]:do_damage(self.universe)
 end
 
 -- this MUST be called after calling Moons:do_damage()
@@ -130,16 +134,16 @@ function Moons:tick(dt)
         -- bounce the moons off the edge
         if moon.x <= universe.padding + moon.radius and moon.vx < 0 then
             moon.vx = -moon.vx
-            moon:do_damage()
+            moon:do_damage(self.universe)
         elseif moon.y <= universe.padding + moon.radius and moon.vy < 0 then
             moon.vy = -moon.vy
-            moon:do_damage()
+            moon:do_damage(self.universe)
         elseif moon.x >= love.graphics.getWidth() - universe.padding - moon.radius and moon.vx > 0 then
             moon.vx = -moon.vx
-            moon:do_damage()
+            moon:do_damage(self.universe)
         elseif moon.y >= love.graphics.getHeight() - universe.padding - moon.radius and moon.vy > 0 then
             moon.vy = -moon.vy
-            moon:do_damage()
+            moon:do_damage(self.universe)
         end
         return moon
     end, self.moonlist)

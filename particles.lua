@@ -1,19 +1,4 @@
-ParticleSystem = {
-    baseparticle = {
-        size = 5,
-        color = {1, 1, 1, 1},
-        x = 0,
-        y = 0,
-        vx = 0,
-        vy = 0,
-        timeleft = 0.5
-    },
-    baseemitter = {
-        position = {0, 0},
-        amountpertick = 5,
-        ticksleft = 100
-    }
-}
+ParticleSystem = {}
 ParticleSystem.__index = ParticleSystem
 
 function ParticleSystem:new(universe)
@@ -39,14 +24,32 @@ function ParticleSystem:create_particle(x, y, vx, vy, size, time)
     }
 end
 
-function ParticleSystem:create_emitter(x, y, amountpertick, ticks)
-
+function ParticleSystem:create_emitter(x, y, v, amountpertick, ticks)
+    self.emitters[#self.emitters + 1] = {
+        size = size,
+        x = x,
+        y = y,
+        v = v,
+        amountpertick = amountpertick,
+        ticksleft = ticks
+    }
 end
 
 function ParticleSystem:tick(dt)
-    --TODO
-    self:create_particle(0, 0, 10, 10, 5, 1)
-    -- todo
+    -- Spawn particles from emitters
+    for i, emitter in ipairs(self.emitters) do
+        local randomdir = math.random() * math.pi * 2
+        for _ = 0, emitter.amountpertick do
+            self:create_particle(emitter.x, emitter.y, math.sin(randomdir) * emitter.v, math.cos(randomdir) * emitter.v, 5, 0.5)
+        end
+        emitter.ticksleft = emitter.ticksleft - 1
+    end
+    -- Remove old emitters
+    for i, emitter in ipairs(self.emitters) do
+        if emitter.ticksleft <= 0 then
+            table.remove(self.emitters, i)
+        end
+    end
     -- Tick the particles
     for i, particle in ipairs(self.particles) do
         particle.x = particle.x + particle.vx * dt
